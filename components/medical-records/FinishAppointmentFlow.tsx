@@ -333,7 +333,7 @@ export function FinishAppointmentFlow({
               </CardHeader>
               <CardContent className="text-sm space-y-1">
                 <p className="font-medium">
-                  {professional?.user?.name ?? professional?.user?.email ?? '—'}
+                  {professional?.user?.fullName ?? professional?.user?.email ?? '—'}
                 </p>
                 {professional?.specialty && (
                   <p className="text-muted-foreground">

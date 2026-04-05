@@ -98,7 +98,7 @@ export function MedicalRecordForm({
       try {
         const [templatesResult, recordResult] = await Promise.all([
           getMedicalRecordTemplatesAction(
-            tenantId,
+            tenantId!,
             true,
             professionalType ?? undefined,
             professionalId ?? undefined

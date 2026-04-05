@@ -51,7 +51,7 @@ const schema = z.object({
   referenceRangeText: z.string().optional(),
   preparationInfo: z.string().optional(),
   turnaroundHours: z.string().optional(),
-  active: z.boolean().default(true),
+  active: z.boolean(),
 });
 
 type FormValues = z.infer<typeof schema>;

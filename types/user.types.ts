@@ -1,4 +1,4 @@
-import { UserRole, Gender } from './auth.types';
+import { UserRole, Gender, TypeTenant } from './auth.types';
 
 // CreateUserRequest para o backend (firstName, lastName, email, password, phone?, cpf?, birthDate?, tenantId?)
 export interface CreateUserRequestBodyRequest {
@@ -60,9 +60,6 @@ export interface UpdateUserBlockedBodyRequest {
 
 // Tipos para o backend Role enum
 export type BackendRole = 'OWNER' | 'ADMIN' | 'RECEPTION' | 'SPECIALIST' | 'FINANCE' | 'READONLY';
-
-// Tipos para TypeTenant do backend
-export type TypeTenant = 'CLINIC' | 'SOLO';
 
 // UserDetailResponse retornado pelo backend
 export interface UserDetailResponse {

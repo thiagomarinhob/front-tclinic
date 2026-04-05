@@ -201,7 +201,7 @@ export function ProcedureList({ professionalId, onEdit }: ProcedureListProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os profissionais</SelectItem>
-                  {professionals.map((p) => (
+                  {(professionals ?? []).map((p) => (
                     <SelectItem key={p.id} value={p.id}>
                       {p.user.fullName}
                     </SelectItem>
