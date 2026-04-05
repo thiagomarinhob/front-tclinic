@@ -9,6 +9,7 @@ import type {
   PaginatedResponse,
 } from '@/types';
 import type { CreateProfessionalWithUserRequest } from '@/types/professional.types';
+import type { Specialty } from '@/types/professional.types';
 
 export async function createProfessionalAction(
   data: CreateProfessionalRequest
@@ -290,7 +291,7 @@ export async function getProfessionalsByClinicAction(
             tenantStatus: user.tenantStatus,
             planType: user.planType,
           },
-          specialty: prof.specialty,
+          specialty: prof.specialty as Specialty,
           documentType: prof.documentType as any,
           documentNumber: prof.documentNumber,
           documentState: prof.documentState,
@@ -378,7 +379,7 @@ export async function updateProfessionalActiveAction(
         tenantStatus: user.tenantStatus,
         planType: user.planType,
       },
-      specialty: response.specialty,
+      specialty: response.specialty as Specialty,
       documentType: response.documentType as any,
       documentNumber: response.documentNumber,
       documentState: response.documentState,
