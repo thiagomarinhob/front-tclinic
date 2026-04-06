@@ -34,6 +34,7 @@ import { Gender } from '@/types/auth.types';
 
 const patientFormSchema = z.object({
   fullName: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
+  motherName: z.string().optional(),
   cpf: z.string().optional().refine(
     (val) => !val || /^\d{11}$/.test(val.replace(/\D/g, '')),
     'CPF deve ter 11 dígitos'
@@ -119,6 +120,7 @@ export function PatientDialog({ open, onOpenChange, patient, onSuccess }: Patien
     if (open) {
       reset({
         fullName: patient?.fullName || '',
+        motherName: patient?.motherName || '',
         cpf: formatInitialCPF(patient?.cpf),
         birthDate: patient?.birthDate || '',
         gender: patient?.gender as Gender | undefined,
@@ -168,6 +170,21 @@ export function PatientDialog({ open, onOpenChange, patient, onSuccess }: Patien
     const numbers = value.replace(/\D/g, '');
     if (numbers.length <= 5) return numbers;
     return `${numbers.slice(0, 5)}-${numbers.slice(5, 8)}`;
+  };
+
+  const fetchAddressByCep = async (cep: string) => {
+    const numbers = cep.replace(/\D/g, '');
+    if (numbers.length !== 8) return;
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${numbers}/json/`);
+      const data = await response.json();
+      if (!data.erro) {
+        setValue('addressCity', data.localidade);
+        setValue('addressState', data.uf);
+      }
+    } catch {
+      // silencia erros de rede
+    }
   };
 
   const onSubmit = async (data: PatientFormData) => {
@@ -243,7 +260,7 @@ export function PatientDialog({ open, onOpenChange, patient, onSuccess }: Patien
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="sm:col-span-2">
+                <div className="sm:col-span-2 space-y-2">
                   <Label htmlFor="fullName">Nome Completo *</Label>
                   <Input
                     id="fullName"
@@ -254,6 +271,15 @@ export function PatientDialog({ open, onOpenChange, patient, onSuccess }: Patien
                   {errors.fullName && (
                     <p className="mt-1 text-sm text-red-500">{errors.fullName.message}</p>
                   )}
+                </div>
+
+                <div className="sm:col-span-2 space-y-2">
+                  <Label htmlFor="motherName">Nome da Mãe</Label>
+                  <Input
+                    id="motherName"
+                    placeholder="Nome completo da mãe"
+                    {...register('motherName')}
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -373,12 +399,13 @@ export function PatientDialog({ open, onOpenChange, patient, onSuccess }: Patien
                     onChange={(e) => {
                       const formatted = formatCEP(e.target.value);
                       setValue('addressZipcode', formatted);
+                      fetchAddressByCep(formatted);
                     }}
                     maxLength={9}
                   />
                 </div>
 
-                <div className="sm:col-span-2">
+                <div className="sm:col-span-2 space-y-2">
                   <Label htmlFor="addressStreet">Rua</Label>
                   <Input
                     id="addressStreet"
@@ -498,7 +525,7 @@ export function PatientDialog({ open, onOpenChange, patient, onSuccess }: Patien
                   </Select>
                 </div>
 
-                <div className="sm:col-span-2">
+                <div className="sm:col-span-2 space-y-2">
                   <Label htmlFor="allergies">Alergias</Label>
                   <Textarea
                     id="allergies"

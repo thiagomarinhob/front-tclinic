@@ -13,6 +13,7 @@ import { AddProceduresSection } from './AddProceduresSection';
 import { ExamRequestDialog } from './ExamRequestDialog';
 import { AtestadoDialog } from './AtestadoDialog';
 import { MedicalRecordForm } from './MedicalRecordForm';
+import { DentalMedicalRecordForm } from './DentalMedicalRecordForm';
 import { RecentHistory } from './RecentHistory';
 import { HistoryDialog } from './HistoryDialog';
 import { PrintDialog } from './PrintDialog';
@@ -230,16 +231,29 @@ export function MedicalRecordPage({ appointmentId }: MedicalRecordPageProps) {
           onHistoryClick={() => setShowHistory(true)}
         />
 
-        <MedicalRecordForm
-          appointmentId={appointmentId}
-          tenantId={tenantId}
-          professionalType={appointment.professional?.specialty ?? null}
-          professionalId={appointment.professional?.id ?? null}
-          vitalSigns={vitalSigns ?? undefined}
-          onRecordLoaded={handleRecordLoaded}
-          onContentChange={handleContentChange}
-          onTemplateChange={handleTemplateChange}
-        />
+        {appointment.professional?.specialty === 'DENTISTA' ? (
+          <DentalMedicalRecordForm
+            appointmentId={appointmentId}
+            tenantId={tenantId}
+            professionalType={appointment.professional?.specialty ?? null}
+            professionalId={appointment.professional?.id ?? null}
+            vitalSigns={vitalSigns ?? undefined}
+            onRecordLoaded={handleRecordLoaded}
+            onContentChange={handleContentChange}
+            onTemplateChange={handleTemplateChange}
+          />
+        ) : (
+          <MedicalRecordForm
+            appointmentId={appointmentId}
+            tenantId={tenantId}
+            professionalType={appointment.professional?.specialty ?? null}
+            professionalId={appointment.professional?.id ?? null}
+            vitalSigns={vitalSigns ?? undefined}
+            onRecordLoaded={handleRecordLoaded}
+            onContentChange={handleContentChange}
+            onTemplateChange={handleTemplateChange}
+          />
+        )}
 
         <QuickActions
           appointmentId={appointmentId}

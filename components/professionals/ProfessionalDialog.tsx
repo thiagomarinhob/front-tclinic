@@ -212,7 +212,7 @@ export function ProfessionalDialog({ open, onOpenChange, professional, onSuccess
                       )}
                     </div>
 
-                    <div className="sm:col-span-2">
+                    <div className="sm:col-span-2 space-y-2">
                       <Label htmlFor="email">Email *</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -362,7 +362,7 @@ export function ProfessionalDialog({ open, onOpenChange, professional, onSuccess
                   </div>
                 )}
 
-                <div className="sm:col-span-2">
+                <div className="sm:col-span-2 space-y-2">
                   <Label htmlFor="specialty">Especialidade *</Label>
                   <Select
                     value={form.watch('specialty') || ''}
@@ -371,7 +371,7 @@ export function ProfessionalDialog({ open, onOpenChange, professional, onSuccess
                     <SelectTrigger className={form.formState.errors.specialty ? 'border-red-500' : ''}>
                       <SelectValue placeholder="Selecione a especialidade" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent position="popper" className="max-h-60 overflow-y-auto">
                       {Object.values(Specialty).map((specialty) => (
                         <SelectItem key={specialty} value={specialty}>
                           {SPECIALTY_LABELS[specialty]}
@@ -442,7 +442,7 @@ export function ProfessionalDialog({ open, onOpenChange, professional, onSuccess
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione (opcional)" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent position="popper" className="max-h-60 overflow-y-auto">
                       <SelectItem value="AC">AC</SelectItem>
                       <SelectItem value="AL">AL</SelectItem>
                       <SelectItem value="AP">AP</SelectItem>

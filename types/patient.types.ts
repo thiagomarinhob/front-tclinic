@@ -3,6 +3,7 @@ import { Gender } from './auth.types';
 export interface Patient {
   id: string;
   fullName: string;
+  motherName?: string;
   cpf?: string;
   rg?: string;
   birthDate?: string;
@@ -34,6 +35,7 @@ export interface Patient {
 export interface CreatePatientRequest {
   tenantId: string;
   fullName: string;
+  motherName?: string;
   cpf?: string;
   rg?: string;
   birthDate?: string;
