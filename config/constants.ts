@@ -6,6 +6,7 @@ export const ROUTES = {
   REGISTER_CLINIC: "/register-clinic",
   PLAN_SELECTION: "/plan-selection",
   PLAN_SELECTION_SUCCESS: "/plan-selection/success",
+  
 
   DASHBOARD: "/dashboard",
   PATIENTS: "/patients",
