@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/v1";
+  process.env.NEXT_PUBLIC_API_URL || "https://api.tclinic.com.br/v1";
 
 export async function GET(
   _request: Request,

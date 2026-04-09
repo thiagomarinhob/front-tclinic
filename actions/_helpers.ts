@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/v1";
+  process.env.NEXT_PUBLIC_API_URL || "https://api.tclinic.com.br/v1";
 
 export interface ApiError {
   message: string;

@@ -1,5 +1,5 @@
 export const env = {
-  apiUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/v1",
+  apiUrl: process.env.NEXT_PUBLIC_API_URL || "https://api.tclinic.com.br/v1",
   appName: process.env.NEXT_PUBLIC_APP_NAME || "TClinic",
   appVersion: process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0",
   memedScriptUrl:
