@@ -79,10 +79,10 @@ export const professionalSchema = z.object({
     'GINECOLOGISTA', 'MASTOLOGISTA', 'OBSTETRIACO', 'OFTALMOLOGISTA',
     'PEDIATRA', 'PSICOLOGISTA', 'PSIQUIATRA', 'UROLOGISTA',
   ], { message: 'Especialidade é obrigatória' }),
-  documentType: z.enum(['CRM', 'CREFITO', 'CRO', 'CRP', 'CRN', 'COREN', 'OUTRO']),
-  documentNumber: z.string().min(1, 'Número do documento é obrigatório'),
-  documentState: z.string().max(2).optional(),
-  bio: z.string().optional(),
+  documentType: z.enum(['CRM', 'CREFITO', 'CRO', 'CRP', 'CRN', 'COREN', 'OUTRO']).nullish(),
+  documentNumber: z.string().nullish(),
+  documentState: z.string().max(2).nullish(),
+  bio: z.string().nullish(),
   profileImageUrl: z.string().url('URL inválida').optional().or(z.literal('')),
 });
 

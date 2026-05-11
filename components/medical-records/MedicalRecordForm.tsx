@@ -33,6 +33,7 @@ import type {
   VitalSigns,
   MedicalRecord,
 } from '@/types';
+import { PrescricaoExternaField, type PrescricaoExternaItem } from './PrescricaoExternaField';
 
 interface MedicalRecordFormProps {
   appointmentId: string;
@@ -338,7 +339,17 @@ export function MedicalRecordForm({
                   )}
                 </AccordionTrigger>
                 <AccordionContent>
-                  {field.type === 'textarea' ? (
+                  {field.type === 'prescricao_comum' || field.type === 'prescricao_controlada' ? (
+                    <PrescricaoExternaField
+                      value={
+                        Array.isArray(content[field.id])
+                          ? (content[field.id] as PrescricaoExternaItem[])
+                          : []
+                      }
+                      onChange={(items) => updateField(field.id, items)}
+                      controlled={field.type === 'prescricao_controlada'}
+                    />
+                  ) : field.type === 'textarea' ? (
                     <Textarea
                       placeholder={field.placeholder}
                       rows={4}

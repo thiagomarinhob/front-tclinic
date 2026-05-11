@@ -118,19 +118,28 @@ function ProfessionalCard({ professional }: ProfessionalCardProps) {
 
             {/* Document Info */}
             <div className="mt-3 space-y-2">
-              <div className="flex items-center gap-2 text-sm flex-wrap">
-                <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-                <Badge
-                  variant="outline"
-                  className={`text-xs ${getDocumentTypeColor(documentType)}`}
-                >
-                  {getDocumentTypeLabel(documentType)}
-                </Badge>
-                <span className="font-mono text-muted-foreground">{documentNumber}</span>
-                {documentState && (
-                  <span className="text-muted-foreground">- {documentState}</span>
-                )}
-              </div>
+              {documentType ? (
+                <div className="flex items-center gap-2 text-sm flex-wrap">
+                  <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <Badge
+                    variant="outline"
+                    className={`text-xs ${getDocumentTypeColor(documentType)}`}
+                  >
+                    {getDocumentTypeLabel(documentType)}
+                  </Badge>
+                  {documentNumber && (
+                    <span className="font-mono text-muted-foreground">{documentNumber}</span>
+                  )}
+                  {documentState && (
+                    <span className="text-muted-foreground">- {documentState}</span>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <FileText className="h-4 w-4 shrink-0" />
+                  <span>Documento profissional não informado</span>
+                </div>
+              )}
 
               {/* Contact Info */}
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">

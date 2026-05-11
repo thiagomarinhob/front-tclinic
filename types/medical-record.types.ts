@@ -13,7 +13,7 @@ export interface VitalSigns {
 export interface MedicalRecordTemplateField {
   id: string;
   label: string;
-  type: 'text' | 'textarea' | 'number' | 'date' | 'checkbox' | 'radio' | 'mult_checkbox' | 'select' | string;
+  type: 'text' | 'textarea' | 'number' | 'date' | 'checkbox' | 'radio' | 'mult_checkbox' | 'select' | 'prescricao_comum' | 'prescricao_controlada' | string;
   placeholder?: string;
   /** Ordem de exibição (1, 2, 3...); permite mover ex.: última pergunta para posição 2. */
   order?: number;

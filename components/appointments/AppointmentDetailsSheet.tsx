@@ -281,9 +281,11 @@ export function AppointmentDetailsSheet({
                 <div className="space-y-1 pl-6">
                   <p className="font-medium">{appointment.professional.user.fullName}</p>
                   <p className="text-sm text-muted-foreground">{SPECIALTY_LABELS[appointment.professional.specialty] || appointment.professional.specialty}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {appointment.professional.documentType}: {appointment.professional.documentNumber}
-                  </p>
+                  {appointment.professional.documentType && (
+                    <p className="text-sm text-muted-foreground">
+                      {appointment.professional.documentType}: {appointment.professional.documentNumber}
+                    </p>
+                  )}
                 </div>
               </div>
 

@@ -12,6 +12,7 @@ import {
   DollarSign,
   Settings,
   FlaskConical,
+  MonitorPlay,
 } from "lucide-react";
 import { ROUTES } from "./constants";
 import { UserRole } from "@/types";
@@ -117,6 +118,16 @@ export const NAV_ROUTES: NavItem[] = [
     icon: DoorOpen,
     roles: [UserRole.ADMIN_CLINIC],
     hidden: true,
+  },
+  {
+    name: "Painel de Chamadas",
+    href: ROUTES.PAINEL,
+    icon: MonitorPlay,
+    roles: [
+      UserRole.ADMIN_CLINIC,
+      UserRole.PROFISSIONAL_SAUDE,
+      UserRole.RECEPCIONISTA,
+    ],
   },
   {
     name: "Laboratório",

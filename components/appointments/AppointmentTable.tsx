@@ -20,13 +20,23 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useAppointmentsByTenant, useAppointmentsByProfessional } from '@/hooks/useAppointments';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { SPECIALTY_LABELS } from '@/types';
-import { Search, Eye, Edit, X } from 'lucide-react';
+import type { Room } from '@/types';
+import { Search, Eye, Edit, Bell, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { format, subMonths, addMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { toast } from 'sonner';
+import { chamarPacienteAction } from '@/actions/painel-actions';
+import { getAllActiveRoomsAction } from '@/actions/room-actions';
 
 interface AppointmentTableProps {
   professionalId?: string;
@@ -35,6 +45,11 @@ interface AppointmentTableProps {
 export function AppointmentTable({ professionalId }: AppointmentTableProps) {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [callDialogOpen, setCallDialogOpen] = useState(false);
+  const [appointmentToCall, setAppointmentToCall] = useState<string | null>(null);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [loadingRooms, setLoadingRooms] = useState(false);
+  const [calling, setCalling] = useState(false);
   const { user } = useAuthContext();
   const tenantId = user?.clinicId || null;
 
@@ -69,6 +84,33 @@ export function AppointmentTable({ professionalId }: AppointmentTableProps) {
 
     return matchesSearch;
   });
+
+  const handleChamarClick = async (appointmentId: string) => {
+    setAppointmentToCall(appointmentId);
+    setCallDialogOpen(true);
+    setLoadingRooms(true);
+    const result = await getAllActiveRoomsAction();
+    if (result.success && result.data) {
+      setRooms(result.data);
+    } else {
+      toast.error('Erro ao carregar salas');
+    }
+    setLoadingRooms(false);
+  };
+
+  const handleChamarConfirm = async (roomId: string) => {
+    if (!appointmentToCall) return;
+    setCalling(true);
+    const result = await chamarPacienteAction(appointmentToCall, roomId);
+    setCalling(false);
+    setCallDialogOpen(false);
+    setAppointmentToCall(null);
+    if (result.success) {
+      toast.success('Paciente chamado com sucesso!');
+    } else {
+      toast.error(result.error ?? 'Erro ao chamar paciente no painel');
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { label: string; variant: any }> = {
@@ -176,6 +218,17 @@ export function AppointmentTable({ professionalId }: AppointmentTableProps) {
                   <TableCell>{getStatusBadge(appointment.status)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
+                      {(appointment.status === 'AGENDADO' || appointment.status === 'CONFIRMADO') && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1.5 text-xs"
+                          onClick={() => handleChamarClick(appointment.id)}
+                        >
+                          <Bell className="h-3.5 w-3.5" />
+                          Chamar
+                        </Button>
+                      )}
                       <Button variant="ghost" size="icon" asChild>
                         <Link href={`/appointments/${appointment.id}`}>
                           <Eye className="h-4 w-4" />
@@ -195,6 +248,37 @@ export function AppointmentTable({ professionalId }: AppointmentTableProps) {
         </Table>
         </div>
       </Card>
+      <Dialog open={callDialogOpen} onOpenChange={(open) => { if (!calling) setCallDialogOpen(open); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Selecionar consultório para chamada</DialogTitle>
+          </DialogHeader>
+          {loadingRooms ? (
+            <div className="flex justify-center py-6">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : rooms.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              Nenhuma sala cadastrada. Cadastre salas em Configurações.
+            </p>
+          ) : (
+            <div className="grid gap-2">
+              {rooms.map((room) => (
+                <Button
+                  key={room.id}
+                  variant="outline"
+                  className="justify-start"
+                  disabled={calling}
+                  onClick={() => handleChamarConfirm(room.id)}
+                >
+                  {calling ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bell className="mr-2 h-4 w-4" />}
+                  {room.name}
+                </Button>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

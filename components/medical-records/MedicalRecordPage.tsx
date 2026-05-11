@@ -173,8 +173,19 @@ export function MedicalRecordPage({ appointmentId }: MedicalRecordPageProps) {
   }, [appointmentId, vitalSigns]);
 
   const handleReceitaClick = useCallback(async () => {
-    const prescricoes = (medicalRecordContentRef.current['prescricoes'] as string) ?? '';
-    if (!prescricoes.trim()) {
+    const rawPrescricoes = medicalRecordContentRef.current['prescricoes'];
+    let prescricoes = '';
+    if (typeof rawPrescricoes === 'string') {
+      prescricoes = rawPrescricoes.trim();
+    } else if (Array.isArray(rawPrescricoes) && rawPrescricoes.length > 0) {
+      prescricoes = (rawPrescricoes as Array<{ medicamento?: string; posologia?: string }>)
+        .map((item, idx) => {
+          const pos = item.posologia ? ` — ${item.posologia}` : '';
+          return `${idx + 1}. ${item.medicamento ?? ''}${pos}`;
+        })
+        .join('\n');
+    }
+    if (!prescricoes) {
       toast.error('Preencha o campo "Prescrições" no prontuário antes de gerar a receita');
       return;
     }

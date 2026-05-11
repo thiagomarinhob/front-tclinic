@@ -74,10 +74,10 @@ export function ProfessionalForm({ professional, onSuccess }: ProfessionalFormPr
     defaultValues: isEditing ? {
       userId: professional?.user?.id || '',
       specialty: professional?.specialty || '',
-      documentType: professional?.documentType || DocumentType.CRM,
-      documentNumber: professional?.documentNumber || '',
-      documentState: professional?.documentState,
-      bio: professional?.bio,
+      documentType: professional?.documentType ?? undefined,
+      documentNumber: professional?.documentNumber ?? '',
+      documentState: professional?.documentState ?? undefined,
+      bio: professional?.bio ?? undefined,
     } : {
       firstName: '',
       lastName: '',
@@ -406,7 +406,7 @@ export function ProfessionalForm({ professional, onSuccess }: ProfessionalFormPr
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="documentType">Tipo de Documento *</Label>
+            <Label htmlFor="documentType">Tipo de Documento</Label>
             <Select
               value={form.watch('documentType') || ''}
               onValueChange={(value) => form.setValue('documentType', value as DocumentType)}
@@ -430,7 +430,7 @@ export function ProfessionalForm({ professional, onSuccess }: ProfessionalFormPr
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="documentNumber">Número do Documento *</Label>
+            <Label htmlFor="documentNumber">Número do Documento</Label>
             <Input
               id="documentNumber"
               placeholder="Ex: 123456"

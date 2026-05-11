@@ -142,11 +142,13 @@ function ProfessionalSchedule({
             <p>
               <strong>Especialidade:</strong> {SPECIALTY_LABELS[professional.specialty] || professional.specialty}
             </p>
-            <p>
-              <strong>
-                {professional.documentType}: {professional.documentNumber}
-              </strong>
-            </p>
+            {professional.documentType && (
+              <p>
+                <strong>
+                  {professional.documentType}: {professional.documentNumber}
+                </strong>
+              </p>
+            )}
           </div>
         </div>
       </Card>

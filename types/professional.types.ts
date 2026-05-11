@@ -4,8 +4,8 @@ export interface Professional {
   id: string;
   user: User;
   specialty: Specialty;
-  documentType: DocumentType;
-  documentNumber: string;
+  documentType?: DocumentType | null;
+  documentNumber?: string | null;
   documentState?: string;
   bio?: string;
   profileImageUrl?: string;
