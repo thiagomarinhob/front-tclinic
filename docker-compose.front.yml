@@ -1,0 +1,9 @@
+services:
+  frontend:
+    image: ghcr.io/thiagomarinhob/front-tclinic:latest
+    container_name: solutions-clinic-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
