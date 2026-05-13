@@ -189,9 +189,10 @@ export function AppointmentDetailsSheet({
   };
 
   const isAssignedProfessional = appointment.professional.user.id === user?.id;
+  const isProfessionalRole = user?.role === UserRole.PROFISSIONAL_SAUDE || (user?.role === UserRole.ADMIN_CLINIC && isAssignedProfessional);
   const canCancel = !['CANCELADO', 'FINALIZADO'].includes(appointment.status);
-  const canStart = ['AGENDADO', 'CONFIRMADO'].includes(appointment.status) && user?.role === UserRole.PROFISSIONAL_SAUDE && isAssignedProfessional;
-  const canReturnToAppointment = appointment.status === 'EM_ATENDIMENTO' && user?.role === UserRole.PROFISSIONAL_SAUDE && isAssignedProfessional;
+  const canStart = ['AGENDADO', 'CONFIRMADO'].includes(appointment.status) && isProfessionalRole;
+  const canReturnToAppointment = appointment.status === 'EM_ATENDIMENTO' && isProfessionalRole;
   const canEdit = !['CANCELADO', 'FINALIZADO'].includes(appointment.status);
   const canTriage = ['AGENDADO', 'CONFIRMADO'].includes(appointment.status) && user?.role !== UserRole.PROFISSIONAL_SAUDE;
   const hasVitalSigns = appointment.vitalSigns && Object.keys(appointment.vitalSigns).length > 0;

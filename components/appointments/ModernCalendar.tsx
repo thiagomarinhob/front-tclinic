@@ -152,6 +152,16 @@ export function ModernCalendar({ professionalId }: ModernCalendarProps) {
 
   const { data: appointments = [], isLoading } = professionalId ? professionalQuery : tenantQuery;
 
+  // Sync selectedAppointment with fresh data after mutations (e.g. triage save)
+  useEffect(() => {
+    if (selectedAppointment) {
+      const updated = appointments.find(a => a.id === selectedAppointment.id);
+      if (updated) {
+        setSelectedAppointment(updated);
+      }
+    }
+  }, [appointments]);
+
   // Excluir agendamentos cancelados da exibição no calendário
   const visibleAppointments = useMemo(
     () => appointments.filter(apt => apt.status !== 'CANCELADO'),

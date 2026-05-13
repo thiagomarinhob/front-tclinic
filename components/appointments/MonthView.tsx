@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAppointmentsByDateRange, useAppointmentsByProfessional } from '@/hooks/useAppointments';
@@ -73,6 +73,16 @@ export function MonthView({ professionalId }: MonthViewProps) {
   );
 
   const { data: appointments = [], isLoading } = professionalId ? professionalQuery : tenantQuery;
+
+  // Sync selectedAppointment with fresh data after mutations (e.g. triage save)
+  useEffect(() => {
+    if (selectedAppointment) {
+      const updated = appointments.find(a => a.id === selectedAppointment.id);
+      if (updated) {
+        setSelectedAppointment(updated);
+      }
+    }
+  }, [appointments]);
 
   // Excluir agendamentos cancelados da exibição no calendário
   const visibleAppointments = useMemo(
