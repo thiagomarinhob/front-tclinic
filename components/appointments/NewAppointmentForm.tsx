@@ -84,7 +84,7 @@ export function NewAppointmentForm() {
     },
   });
 
-  const isProfessional = user?.role === UserRole.PROFISSIONAL_SAUDE;
+  const isProfessional = user?.role === UserRole.PROFISSIONAL_SAUDE || user?.tenantType === 'SOLO';
   const [ownProfessionalLabel, setOwnProfessionalLabel] = useState<string>('');
 
   const professionalId = watch('professionalId');

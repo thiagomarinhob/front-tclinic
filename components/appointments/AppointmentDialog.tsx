@@ -34,6 +34,8 @@ import { useAvailability } from '@/hooks/useAvailability';
 import { useProfessionalsByCurrentClinic } from '@/hooks/useProfessionals';
 import { useProcedures } from '@/hooks/useProcedures';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { UserRole } from '@/types';
+import { getProfessionalByUserIdAction } from '@/actions/professional-actions';
 import { toast } from 'sonner';
 import { ConflictDialog } from './ConflictDialog';
 import { PatientAutocomplete } from './PatientAutocomplete';
@@ -83,6 +85,8 @@ export function AppointmentDialog({
   onSuccess,
 }: AppointmentDialogProps) {
   const { user } = useAuthContext();
+  const isProfessional = user?.role === UserRole.PROFISSIONAL_SAUDE || user?.tenantType === 'SOLO';
+  const [ownProfessionalLabel, setOwnProfessionalLabel] = useState<string>('');
   const { professionals, isLoading: loadingProfessionals } = useProfessionalsByCurrentClinic(0, 100);
   const { procedures: proceduresData, isLoading: loadingProcedures } = useProcedures(
     user?.clinicId || null,
@@ -139,6 +143,18 @@ export function AppointmentDialog({
       setSelectedProcedureId('');
     }
   }, [open, defaultDate, defaultTime, reset]);
+
+  useEffect(() => {
+    if (!open || !isProfessional || !user?.id) return;
+    getProfessionalByUserIdAction(user.id).then((result) => {
+      if (result.success && result.data) {
+        setValue('professionalId', result.data.id);
+        setOwnProfessionalLabel(
+          `${user.fullName} - ${SPECIALTY_LABELS[result.data.specialty as keyof typeof SPECIALTY_LABELS] || result.data.specialty}`
+        );
+      }
+    });
+  }, [open, isProfessional, user?.id, user?.fullName, setValue]);
 
   useEffect(() => {
     if (professionalId && date && time) {
@@ -263,31 +279,39 @@ export function AppointmentDialog({
               {/* Profissional */}
               <div className="space-y-2">
                 <Label htmlFor="professionalId">Profissional *</Label>
-                <Select
-                  value={watch('professionalId')}
-                  onValueChange={(value) => setValue('professionalId', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o profissional" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {loadingProfessionals ? (
-                      <div className="p-2 text-sm text-muted-foreground">
-                        Carregando...
-                      </div>
-                    ) : professionals && professionals.length > 0 ? (
-                      professionals.map((professional) => (
-                        <SelectItem key={professional.id} value={professional.id}>
-                          {professional.user.fullName} - {SPECIALTY_LABELS[professional.specialty] || professional.specialty}
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <div className="p-2 text-sm text-muted-foreground">
-                        Nenhum profissional cadastrado
-                      </div>
-                    )}
-                  </SelectContent>
-                </Select>
+                {isProfessional ? (
+                  <Input
+                    value={ownProfessionalLabel || 'Carregando...'}
+                    disabled
+                    className="bg-muted"
+                  />
+                ) : (
+                  <Select
+                    value={watch('professionalId')}
+                    onValueChange={(value) => setValue('professionalId', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o profissional" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {loadingProfessionals ? (
+                        <div className="p-2 text-sm text-muted-foreground">
+                          Carregando...
+                        </div>
+                      ) : professionals && professionals.length > 0 ? (
+                        professionals.map((professional) => (
+                          <SelectItem key={professional.id} value={professional.id}>
+                            {professional.user.fullName} - {SPECIALTY_LABELS[professional.specialty] || professional.specialty}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <div className="p-2 text-sm text-muted-foreground">
+                          Nenhum profissional cadastrado
+                        </div>
+                      )}
+                    </SelectContent>
+                  </Select>
+                )}
                 {errors.professionalId && (
                   <p className="text-sm text-red-500">{errors.professionalId.message}</p>
                 )}

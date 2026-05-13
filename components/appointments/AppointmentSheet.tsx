@@ -91,7 +91,7 @@ export function AppointmentSheet({
 }: AppointmentSheetProps) {
   const isEditing = !!editingAppointment;
   const { user } = useAuthContext();
-  const isProfessional = user?.role === UserRole.PROFISSIONAL_SAUDE;
+  const isProfessional = user?.role === UserRole.PROFISSIONAL_SAUDE || user?.tenantType === 'SOLO';
   const [ownProfessionalLabel, setOwnProfessionalLabel] = useState<string>('');
 
   const { procedures: proceduresData, isLoading: loadingProcedures } = useProcedures(
