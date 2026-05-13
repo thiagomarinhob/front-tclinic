@@ -226,9 +226,9 @@ export default function ProfessionalDetailsPage() {
               <InfoItem label="Especialidade" value={SPECIALTY_LABELS[professional.specialty] || professional.specialty} />
               <InfoItem
                 label="Tipo de Documento"
-                value={documentTypeLabels[professional.documentType] || professional.documentType}
+                value={(professional.documentType ? documentTypeLabels[professional.documentType] : undefined) || professional.documentType || undefined}
               />
-              <InfoItem label="Número do Documento" value={professional.documentNumber} />
+              <InfoItem label="Número do Documento" value={professional.documentNumber ?? undefined} />
               <InfoItem
                 label="Estado do Documento (UF)"
                 value={professional.documentState || '-'}
