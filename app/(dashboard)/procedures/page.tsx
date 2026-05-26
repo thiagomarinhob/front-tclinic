@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Package } from 'lucide-react';
 import { ProcedureList } from '@/components/procedures/ProcedureList';
 import { ProcedureDialog } from '@/components/procedures/ProcedureDialog';
+import { ComboDialog } from '@/components/procedures/ComboDialog';
 import type { Procedure } from '@/types';
 
 export default function ProceduresPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [comboDialogOpen, setComboDialogOpen] = useState(false);
   const [selectedProcedure, setSelectedProcedure] = useState<Procedure | undefined>();
 
   const handleNewProcedure = () => {
@@ -30,10 +32,16 @@ export default function ProceduresPage() {
             Gerencie os procedimentos da clínica
           </p>
         </div>
-        <Button onClick={handleNewProcedure}>
-          <Plus className="mr-2 h-4 w-4" />
-          Novo Procedimento
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setComboDialogOpen(true)}>
+            <Package className="mr-2 h-4 w-4" />
+            Adicionar Combo
+          </Button>
+          <Button onClick={handleNewProcedure}>
+            <Plus className="mr-2 h-4 w-4" />
+            Novo Procedimento
+          </Button>
+        </div>
       </div>
 
       <ProcedureList onEdit={handleEditProcedure} />
@@ -42,6 +50,11 @@ export default function ProceduresPage() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         procedure={selectedProcedure}
+      />
+
+      <ComboDialog
+        open={comboDialogOpen}
+        onOpenChange={setComboDialogOpen}
       />
     </div>
   );

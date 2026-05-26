@@ -204,7 +204,10 @@ export function PatientAutocomplete({ onSelect, error }: PatientAutocompleteProp
           <DialogHeader>
             <DialogTitle>Cadastrar novo paciente</DialogTitle>
           </DialogHeader>
-          <PatientForm onSuccess={handleNewPatientSuccess} />
+          <PatientForm
+            onSuccess={handleNewPatientSuccess}
+            onCancel={() => setNewPatientModalOpen(false)}
+          />
         </DialogContent>
       </Dialog>
 

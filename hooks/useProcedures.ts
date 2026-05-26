@@ -5,10 +5,11 @@ import {
   getAllProceduresAction,
   getProcedureByIdAction,
   createProcedureAction,
+  createComboProcedureAction,
   updateProcedureAction,
   deleteProcedureAction,
 } from "@/actions/procedure-actions";
-import type { CreateProcedureRequest, UpdateProcedureRequest } from "@/types";
+import type { CreateComboProcedureRequest, CreateProcedureRequest, UpdateProcedureRequest } from "@/types";
 import { toast } from "sonner";
 
 export type ProcedureListFilters = {
@@ -114,6 +115,18 @@ export function useProcedures(
     },
   });
 
+  // Criar combo
+  const createComboMutation = useMutation({
+    mutationFn: (data: CreateComboProcedureRequest) => createComboProcedureAction(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["procedures"] });
+      toast.success("Combo criado com sucesso!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Erro ao criar combo");
+    },
+  });
+
   // Excluir procedimento
   const deleteMutation = useMutation({
     mutationFn: (procedureId: string) => deleteProcedureAction(procedureId),
@@ -132,9 +145,11 @@ export function useProcedures(
     error,
     refetch,
     createProcedure: createMutation.mutateAsync,
+    createCombo: createComboMutation.mutateAsync,
     updateProcedure: updateMutation.mutateAsync,
     deleteProcedure: deleteMutation.mutateAsync,
     isCreating: createMutation.isPending,
+    isCreatingCombo: createComboMutation.isPending,
     isUpdating: updateMutation.isPending,
     isDeleting: deleteMutation.isPending,
   };

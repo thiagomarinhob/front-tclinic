@@ -133,6 +133,7 @@ export async function cancelAppointmentAction(
       `/appointments/${appointmentId}`,
       {
         method: 'DELETE',
+        body: reason ? { reason } : undefined,
       }
     );
 

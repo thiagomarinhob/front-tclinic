@@ -31,13 +31,15 @@ export function useAppointments() {
     appointmentId?: string;
   } | null>(null);
 
-  const { data: result, isLoading, refetch } = useQuery({
+  const { data: todayAppointments = [], isLoading, refetch } = useQuery({
     queryKey: ['appointments', 'today'],
-    queryFn: () => getTodayAppointmentsAction(),
+    queryFn: async () => {
+      const result = await getTodayAppointmentsAction();
+      if (!result.success) throw new Error(result.error || 'Erro ao buscar agendamentos de hoje');
+      return result.data;
+    },
     refetchInterval: 30000,
   });
-
-  const todayAppointments = result?.success ? result.data : [];
 
   const createMutation = useMutation({
     mutationFn: async ({ data, forceSchedule = false }: { 
@@ -173,7 +175,8 @@ export function useAppointmentsByDateRange(
     queryFn: async () => {
       if (!tenantId) return [];
       const result = await getAppointmentsByDateRangeAction(tenantId, startDate, endDate);
-      return result.success ? result.data : [];
+      if (!result.success) throw new Error(result.error || 'Erro ao buscar agendamentos');
+      return result.data;
     },
     enabled: !!tenantId && !!startDate && !!endDate,
     refetchInterval: 30_000,
@@ -193,7 +196,8 @@ export function useAppointmentsByProfessional(
         startDate,
         endDate
       );
-      return result.success ? result.data : [];
+      if (!result.success) throw new Error(result.error || 'Erro ao buscar agendamentos do profissional');
+      return result.data;
     },
     enabled: !!professionalId && !!startDate && !!endDate,
   });
@@ -210,7 +214,8 @@ export function useAppointmentsByTenant(
     queryFn: async () => {
       if (!tenantId) return [];
       const result = await getAppointmentsByTenantAction(tenantId, date, status, orderBy);
-      return result.success ? result.data : [];
+      if (!result.success) throw new Error(result.error || 'Erro ao buscar agendamentos');
+      return result.data;
     },
     enabled: !!tenantId,
     refetchInterval: 30000,
@@ -223,7 +228,7 @@ export function useAppointmentsByPatient(patientId: string | null) {
     queryFn: async () => {
       if (!patientId) return [];
       const result = await getAppointmentsByPatientAction(patientId, 0, 50);
-      if (!result.success) return [];
+      if (!result.success) throw new Error(result.error || 'Erro ao buscar histórico do paciente');
       const data = result.data;
       return Array.isArray(data) ? data : (data?.content ?? []);
     },

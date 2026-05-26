@@ -60,6 +60,8 @@ interface PatientFormProps {
   patient?: Patient;
   /** Chamado ao salvar com sucesso. No create, recebe o paciente criado. */
   onSuccess?: (patient?: Patient) => void;
+  /** Chamado ao clicar em Cancelar. Se não fornecido, faz router.back(). */
+  onCancel?: () => void;
 }
 
 // Funções de formatação para valores iniciais
@@ -89,7 +91,7 @@ function formatInitialCEP(cep: string | undefined): string {
   return `${numbers.slice(0, 5)}-${numbers.slice(5)}`;
 }
 
-export function PatientForm({ patient, onSuccess }: PatientFormProps) {
+export function PatientForm({ patient, onSuccess, onCancel }: PatientFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -176,6 +178,8 @@ export function PatientForm({ patient, onSuccess }: PatientFormProps) {
         addressZipcode: data.addressZipcode?.replace(/\D/g, '') || undefined,
         email: data.email || undefined,
         bloodType: data.bloodType?.trim() || undefined,
+        birthDate: data.birthDate?.trim() || undefined,
+        guardianPhone: data.guardianPhone?.replace(/\D/g, '') || undefined,
       };
 
       let result;
@@ -555,7 +559,7 @@ export function PatientForm({ patient, onSuccess }: PatientFormProps) {
         <Button
           type="button"
           variant="outline"
-          onClick={() => router.back()}
+          onClick={() => onCancel ? onCancel() : router.back()}
           disabled={isSubmitting}
         >
           Cancelar

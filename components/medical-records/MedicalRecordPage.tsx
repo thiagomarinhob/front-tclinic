@@ -221,6 +221,7 @@ export function MedicalRecordPage({ appointmentId }: MedicalRecordPageProps) {
 
   const professionalId = appointment.professional?.id ?? '';
   const canFinish = appointment.status === 'EM_ATENDIMENTO';
+  const triageEnabled = !['FISIOTERAPEUTA', 'DENTISTA', 'PSICOLOGISTA'].includes(appointment.professional?.specialty ?? '');
 
   return (
     <>
@@ -228,11 +229,13 @@ export function MedicalRecordPage({ appointmentId }: MedicalRecordPageProps) {
       <div className="flex-1 overflow-auto space-y-6 pb-6">
         <PatientHeader appointment={appointment} />
 
-        <VitalSigns
-          appointmentId={appointmentId}
-          value={vitalSigns}
-          onChange={setVitalSigns}
-        />
+        {triageEnabled && (
+          <VitalSigns
+            appointmentId={appointmentId}
+            value={vitalSigns}
+            onChange={setVitalSigns}
+          />
+        )}
 
         <AddProceduresSection
           appointmentId={appointmentId}
@@ -248,7 +251,7 @@ export function MedicalRecordPage({ appointmentId }: MedicalRecordPageProps) {
             tenantId={tenantId}
             professionalType={appointment.professional?.specialty ?? null}
             professionalId={appointment.professional?.id ?? null}
-            vitalSigns={vitalSigns ?? undefined}
+            vitalSigns={triageEnabled ? (vitalSigns ?? undefined) : undefined}
             onRecordLoaded={handleRecordLoaded}
             onContentChange={handleContentChange}
             onTemplateChange={handleTemplateChange}
@@ -259,7 +262,7 @@ export function MedicalRecordPage({ appointmentId }: MedicalRecordPageProps) {
             tenantId={tenantId}
             professionalType={appointment.professional?.specialty ?? null}
             professionalId={appointment.professional?.id ?? null}
-            vitalSigns={vitalSigns ?? undefined}
+            vitalSigns={triageEnabled ? (vitalSigns ?? undefined) : undefined}
             onRecordLoaded={handleRecordLoaded}
             onContentChange={handleContentChange}
             onTemplateChange={handleTemplateChange}
@@ -409,7 +412,7 @@ export function MedicalRecordPage({ appointmentId }: MedicalRecordPageProps) {
       isPending={finishMutation.isPending}
       appointment={appointment}
       medicalRecordContent={finishDialogContent}
-      vitalSigns={vitalSigns ?? undefined}
+      vitalSigns={triageEnabled ? (vitalSigns ?? undefined) : undefined}
     />
     </>
   );

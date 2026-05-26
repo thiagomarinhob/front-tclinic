@@ -51,7 +51,9 @@ import { formatCurrency } from '@/lib/utils';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { TriageDialog } from './TriageDialog';
 import type { Appointment, AppointmentStatus, VitalSigns } from '@/types';
-import { SPECIALTY_LABELS, UserRole } from '@/types';
+import { SPECIALTY_LABELS, Specialty, UserRole } from '@/types';
+
+const NO_TRIAGE_SPECIALTIES: Specialty[] = [Specialty.FISIOTERAPEUTA, Specialty.DENTISTA, Specialty.PSICOLOGISTA];
 
 interface AppointmentDetailsSheetProps {
   open: boolean;
@@ -194,8 +196,9 @@ export function AppointmentDetailsSheet({
   const canStart = ['AGENDADO', 'CONFIRMADO'].includes(appointment.status) && isProfessionalRole;
   const canReturnToAppointment = appointment.status === 'EM_ATENDIMENTO' && isProfessionalRole;
   const canEdit = !['CANCELADO', 'FINALIZADO'].includes(appointment.status);
-  const canTriage = ['AGENDADO', 'CONFIRMADO'].includes(appointment.status) && user?.role !== UserRole.PROFISSIONAL_SAUDE;
-  const hasVitalSigns = appointment.vitalSigns && Object.keys(appointment.vitalSigns).length > 0;
+  const triageEnabled = !NO_TRIAGE_SPECIALTIES.includes(appointment.professional.specialty as Specialty);
+  const canTriage = triageEnabled && ['AGENDADO', 'CONFIRMADO'].includes(appointment.status) && user?.role !== UserRole.PROFISSIONAL_SAUDE;
+  const hasVitalSigns = triageEnabled && appointment.vitalSigns && Object.keys(appointment.vitalSigns).length > 0;
 
   const handleReturnToAppointment = () => {
     onOpenChange(false);

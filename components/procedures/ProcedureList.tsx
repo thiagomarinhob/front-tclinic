@@ -25,7 +25,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Search, Eye, Edit, Filter, X, Trash2 } from 'lucide-react';
+import { Search, Eye, Edit, Filter, X, Trash2, Package } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -281,7 +282,17 @@ export function ProcedureList({ professionalId, onEdit }: ProcedureListProps) {
                         aria-label={`Selecionar ${procedure.name}`}
                       />
                     </TableCell>
-                    <TableCell className="font-medium">{procedure.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        {procedure.name}
+                        {procedure.isCombo && (
+                          <Badge variant="secondary" className="text-xs gap-1">
+                            <Package className="h-3 w-3" />
+                            Combo
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell className="text-muted-foreground max-w-xs truncate">
                       {procedure.description ?? '—'}
                     </TableCell>

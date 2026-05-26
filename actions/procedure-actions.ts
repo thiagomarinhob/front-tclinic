@@ -1,12 +1,13 @@
 'use server';
 
 import { apiRequest } from './_helpers';
-import type { 
-  Procedure, 
-  CreateProcedureRequest, 
+import type {
+  Procedure,
+  CreateProcedureRequest,
+  CreateComboProcedureRequest,
   UpdateProcedureRequest,
   PaginatedResponse,
-  ActionResult, 
+  ActionResult,
 } from '@/types';
 
 export async function createProcedureAction(
@@ -136,9 +137,26 @@ export async function getAllProceduresAction(
   }
 }
 
+export async function createComboProcedureAction(
+  data: CreateComboProcedureRequest
+): Promise<ActionResult<Procedure>> {
+  try {
+    const procedure = await apiRequest<Procedure>('/procedures/combo', {
+      method: 'POST',
+      body: data,
+    });
+    return { success: true, data: procedure };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erro ao criar combo',
+    };
+  }
+}
+
 export async function deleteProcedureAction(
   procedureId: string
-): Promise<ActionResult<void>> { 
+): Promise<ActionResult<void>> {
   try {
     await apiRequest(`/procedures/${procedureId}`, {
       method: 'DELETE',
