@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { createProfessionalWithUserAction, updateProfessionalAction } from '@/actions/professional-actions';
 import {
   Dialog,
@@ -70,7 +70,7 @@ function formatDate(value: string): string {
 
 export function ProfessionalDialog({ open, onOpenChange, professional, onSuccess }: ProfessionalDialogProps) {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);

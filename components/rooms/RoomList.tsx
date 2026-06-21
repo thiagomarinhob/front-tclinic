@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { useRoomsPaginated } from '@/hooks/useRooms';
 import { useRooms } from '@/hooks/useRooms';
 import { Card } from '@/components/ui/card';
@@ -32,7 +32,7 @@ import { EmptyState } from '@/components/common/EmptyState';
 const PAGE_SIZE = 10;
 
 export function RoomList() {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const tenantId = user?.clinicId ?? null;
 
   const [page, setPage] = useState(0);

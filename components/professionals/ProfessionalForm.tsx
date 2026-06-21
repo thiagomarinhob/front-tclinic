@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { createProfessionalWithUserAction, updateProfessionalAction } from '@/actions/professional-actions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -62,7 +62,7 @@ interface ProfessionalFormProps {
 export function ProfessionalForm({ professional, onSuccess }: ProfessionalFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);

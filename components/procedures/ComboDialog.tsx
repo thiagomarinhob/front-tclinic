@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/select';
 import { getAllProceduresAction } from '@/actions/procedure-actions';
 import { formatCurrency } from '@/lib/utils';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { useProcedures } from '@/hooks/useProcedures';
 import type { Procedure } from '@/types';
 
@@ -35,7 +35,7 @@ interface ComboDialogProps {
 }
 
 export function ComboDialog({ open, onOpenChange }: ComboDialogProps) {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const tenantId = user?.clinicId || null;
 
   const [name, setName] = useState('');

@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Loader2, User, Mail, Lock, Eye, EyeOff, Phone, Calendar } from 'lucide-react';
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { deleteUserAction } from '@/actions/user-actions';
 import type { CreateUserRequestBodyRequest } from '@/types';
 
@@ -71,7 +71,7 @@ function formatDate(value: string): string {
 export function CreateUserForm({ onSuccess }: CreateUserFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);

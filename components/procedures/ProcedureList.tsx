@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useProcedures } from '@/hooks/useProcedures';
 import { useProfessionals } from '@/hooks/useProfessionals';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -51,7 +51,7 @@ export function ProcedureList({ professionalId, onEdit }: ProcedureListProps) {
   const [procedureToDelete, setProcedureToDelete] = useState<Procedure | null>(null);
 
   const debouncedSearch = useDebounce(searchQuery, 500);
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const tenantId = user?.clinicId || null;
 
   const activeFilter =

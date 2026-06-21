@@ -19,7 +19,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { Loader2, User, Mail, Lock, Eye, EyeOff, Phone, Calendar } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import type { CreateUserRequestBodyRequest } from '@/types';
 
 const createUserFormSchema = z.object({
@@ -78,7 +78,7 @@ function formatDate(value: string): string {
 
 export function UserDialog({ open, onOpenChange, onSuccess }: UserDialogProps) {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);

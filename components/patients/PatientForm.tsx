@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { createPatientAction, updatePatientAction } from '@/actions/patient-actions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -94,7 +94,7 @@ function formatInitialCEP(cep: string | undefined): string {
 export function PatientForm({ patient, onSuccess, onCancel }: PatientFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isEditing = !!patient;

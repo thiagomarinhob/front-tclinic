@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { createPatientAction, updatePatientAction } from '@/actions/patient-actions';
 import {
   Dialog,
@@ -99,7 +99,7 @@ function formatInitialCEP(cep: string | undefined): string {
 
 export function PatientDialog({ open, onOpenChange, patient, onSuccess }: PatientDialogProps) {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isEditing = !!patient;

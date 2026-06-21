@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useAppointment } from '@/hooks/useAppointments';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { finishAppointmentAction } from '@/actions/appointment-actions';
 import { PatientHeader } from './PatientHeader';
 import { VitalSigns } from './VitalSigns';
@@ -57,7 +57,7 @@ export function MedicalRecordPage({ appointmentId }: MedicalRecordPageProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: appointment, isLoading } = useAppointment(appointmentId);
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const tenantId = user?.clinicId ?? null;
 
   const [vitalSigns, setVitalSigns] = useState<VitalSignsType | null>(null);

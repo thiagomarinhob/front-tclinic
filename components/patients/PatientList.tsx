@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { usePatients } from '@/hooks/usePatients';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -37,7 +37,7 @@ export function PatientList() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const debouncedSearch = useDebounce(searchQuery, 500);
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuthContext();
   const tenantId = user?.clinicId || null;
 
   const activeFilter =
@@ -88,7 +88,7 @@ export function PatientList() {
     [updatePatient]
   );
 
-  if (isLoading) {
+  if (isAuthLoading || isLoading) {
     return <LoadingSpinner />;
   }
 

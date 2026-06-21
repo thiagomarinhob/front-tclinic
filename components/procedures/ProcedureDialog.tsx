@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { createProcedureAction, updateProcedureAction } from '@/actions/procedure-actions';
 import {
   Dialog,
@@ -58,7 +58,7 @@ export function ProcedureDialog({
   professionalId
 }: ProcedureDialogProps) {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isEditing = !!procedure;

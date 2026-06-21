@@ -39,7 +39,7 @@ import { getExamTypesAction, type ExamTypeItem } from '@/actions/exam-actions';
 import { autocompletePatientsAction } from '@/actions/patient-actions';
 import { getProfessionalsByClinicAction } from '@/actions/professional-actions';
 import { getHealthPlansAction, type HealthPlan } from '@/actions/health-plan-actions';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { ROUTES } from '@/config/constants';
 import type { LabSector, SampleType } from '@/types';
 
@@ -124,7 +124,7 @@ interface ProfessionalOption {
 
 export function LabOrderForm() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const [examTypes, setExamTypes] = useState<ExamTypeItem[]>([]);
   const [patients, setPatients] = useState<PatientOption[]>([]);
   const [professionals, setProfessionals] = useState<ProfessionalOption[]>([]);
