@@ -7,8 +7,8 @@ import {
   deleteUserAction,
   updateUserBlockedAction,
 } from '@/actions/user-actions';
-import { useAuth } from './useAuth';
-import type { UserListItem, UpdateUserBodyRequest, PaginatedResponse } from '@/types';
+import { useAuthContext } from '@/contexts/AuthContext';
+import type { UpdateUserBodyRequest } from '@/types';
 import { toast } from 'sonner';
 
 export function useUsersByTenant(
@@ -98,7 +98,7 @@ export function useUsersByCurrentClinic(
   search?: string,
   blocked?: boolean
 ) {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const clinicId = user?.clinicId || null;
   
   // Filtrar apenas usuários do tipo RECEPTION

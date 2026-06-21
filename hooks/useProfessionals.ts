@@ -9,7 +9,7 @@ import {
 } from '@/actions/professional-actions';
 import type { CreateProfessionalRequest } from '@/types';
 import { toast } from 'sonner';
-import { useAuth } from './useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 export function useProfessionals() {
   const queryClient = useQueryClient();
@@ -103,7 +103,7 @@ export function useProfessionalsByCurrentClinic(
   active?: boolean,
   documentType?: string
 ) {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const clinicId = user?.clinicId || null;
   
   return useProfessionalsByClinic(clinicId, page, size, sort, search, active, documentType);
