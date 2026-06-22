@@ -10,6 +10,20 @@ import type {
   VitalSigns,
 } from '@/types';
 
+type UnknownRecord = Record<string, unknown>;
+
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === 'object' && value !== null;
+}
+
+function hasEmbeddedAppointmentDetails(appt: AppointmentResponseBackend | Appointment): appt is Appointment {
+  if (!isRecord(appt) || !isRecord(appt.patient) || !isRecord(appt.professional)) {
+    return false;
+  }
+
+  return isRecord(appt.professional.user);
+}
+
 export async function createAppointmentAction(
   data: CreateAppointmentRequest,
   forceSchedule: boolean = false
@@ -186,10 +200,10 @@ export async function getAppointmentByIdAction(
     );
 
     // Se já tem os dados completos (patient e professional como objetos)
-    if ('patient' in appt && typeof (appt as any).patient === 'object') {
+    if (hasEmbeddedAppointmentDetails(appt)) {
       return {
         success: true,
-        data: appt as unknown as Appointment,
+        data: appt,
       };
     }
 
@@ -282,8 +296,8 @@ export async function getAppointmentsByDateRangeAction(
 
     const appointments: Appointment[] = await Promise.all(
       appointmentsResponse.map(async (appt) => {
-        if ('patient' in appt && typeof (appt as any).patient === 'object') {
-          return appt as unknown as Appointment;
+        if (hasEmbeddedAppointmentDetails(appt)) {
+          return appt;
         }
         const { getPatientByIdAction } = await import('./patient-actions');
         const { getProfessionalByIdAction } = await import('./professional-actions');
@@ -369,8 +383,8 @@ export async function getTodayAppointmentsAction(): Promise<ActionResult<Appoint
 
     const appointments: Appointment[] = await Promise.all(
       appointmentsResponse.map(async (appt) => {
-        if ('patient' in appt && typeof (appt as any).patient === 'object') {
-          return appt as unknown as Appointment;
+        if (hasEmbeddedAppointmentDetails(appt)) {
+          return appt;
         }
         const { getPatientByIdAction } = await import('./patient-actions');
         const { getProfessionalByIdAction } = await import('./professional-actions');
@@ -457,8 +471,8 @@ export async function getAppointmentsByProfessionalAction(
 
     const appointments: Appointment[] = await Promise.all(
       appointmentsResponse.map(async (appt) => {
-        if ('patient' in appt && typeof (appt as any).patient === 'object') {
-          return appt as unknown as Appointment;
+        if (hasEmbeddedAppointmentDetails(appt)) {
+          return appt;
         }
         const { getPatientByIdAction } = await import('./patient-actions');
         const { getProfessionalByIdAction } = await import('./professional-actions');
@@ -678,8 +692,8 @@ export async function getAppointmentsByTenantAction(
     const appointments: Appointment[] = await Promise.all(
       appointmentsResponse.map(async (appt) => {
         // Verificar se já tem os dados completos (patient e professional como objetos)
-        if ('patient' in appt && typeof (appt as any).patient === 'object') {
-          return appt as unknown as Appointment;
+        if (hasEmbeddedAppointmentDetails(appt)) {
+          return appt;
         }
 
         // Se não tiver, buscar os dados completos
