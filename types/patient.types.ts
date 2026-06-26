@@ -59,6 +59,11 @@ export interface CreatePatientRequest {
   guardianName?: string;
   guardianPhone?: string;
   guardianRelationship?: string;
+
+  treatmentConsent?: {
+    granted: boolean;
+    termVersion: string;
+  };
 }
 
 export type UpdatePatientRequest = Partial<CreatePatientRequest> & {

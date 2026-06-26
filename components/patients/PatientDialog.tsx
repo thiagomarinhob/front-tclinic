@@ -16,6 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
@@ -59,6 +60,7 @@ const patientFormSchema = z.object({
   guardianName: z.string().optional(),
   guardianPhone: z.string().optional(),
   guardianRelationship: z.string().optional(),
+  treatmentConsentAccepted: z.boolean().optional(),
 });
 
 type PatientFormData = z.infer<typeof patientFormSchema>;
@@ -139,6 +141,7 @@ export function PatientDialog({ open, onOpenChange, patient, onSuccess }: Patien
         guardianName: patient?.guardianName || '',
         guardianPhone: formatInitialPhone(patient?.guardianPhone),
         guardianRelationship: patient?.guardianRelationship || '',
+        treatmentConsentAccepted: false,
       });
     }
   }, [open, patient, reset]);
@@ -196,8 +199,14 @@ export function PatientDialog({ open, onOpenChange, patient, onSuccess }: Patien
     setIsSubmitting(true);
 
     try {
+      if (!isEditing && !data.treatmentConsentAccepted) {
+        toast.error('Confirme o aceite do termo de tratamento para cadastrar o paciente.');
+        return;
+      }
+
+      const { treatmentConsentAccepted, ...patientData } = data;
       const requestData = {
-        ...data,
+        ...patientData,
         tenantId: user.clinicId,
         cpf: data.cpf?.replace(/\D/g, '') || undefined,
         phone: data.phone?.replace(/\D/g, '') || undefined,
@@ -205,6 +214,9 @@ export function PatientDialog({ open, onOpenChange, patient, onSuccess }: Patien
         addressZipcode: data.addressZipcode?.replace(/\D/g, '') || undefined,
         email: data.email || undefined,
         bloodType: data.bloodType?.trim() || undefined,
+        ...(!isEditing && treatmentConsentAccepted
+          ? { treatmentConsent: { granted: true, termVersion: 'v1' } }
+          : {}),
       };
 
       let result;
@@ -591,6 +603,19 @@ export function PatientDialog({ open, onOpenChange, patient, onSuccess }: Patien
                 </div>
               </div>
             </div>
+
+            {!isEditing && (
+              <div className="flex items-start gap-3 rounded-md border p-4">
+                <Checkbox
+                  id="dialogTreatmentConsentAccepted"
+                  checked={watch('treatmentConsentAccepted') || false}
+                  onCheckedChange={(checked) => setValue('treatmentConsentAccepted', checked === true)}
+                />
+                <Label htmlFor="dialogTreatmentConsentAccepted" className="text-sm leading-5">
+                  Confirmo que o paciente ou responsável autorizou o tratamento dos dados necessários ao atendimento.
+                </Label>
+              </div>
+            )}
           </form>
         </ScrollArea>
 

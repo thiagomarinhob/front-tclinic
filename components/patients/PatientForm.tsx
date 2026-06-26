@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
@@ -52,6 +53,7 @@ const patientFormSchema = z.object({
   guardianName: z.string().optional(),
   guardianPhone: z.string().optional(),
   guardianRelationship: z.string().optional(),
+  treatmentConsentAccepted: z.boolean().optional(),
 });
 
 type PatientFormData = z.infer<typeof patientFormSchema>;
@@ -128,6 +130,7 @@ export function PatientForm({ patient, onSuccess, onCancel }: PatientFormProps) 
       guardianName: patient?.guardianName || '',
       guardianPhone: formatInitialPhone(patient?.guardianPhone),
       guardianRelationship: patient?.guardianRelationship || '',
+      treatmentConsentAccepted: false,
     },
   });
 
@@ -169,8 +172,14 @@ export function PatientForm({ patient, onSuccess, onCancel }: PatientFormProps) 
     setIsSubmitting(true);
 
     try {
+      if (!isEditing && !data.treatmentConsentAccepted) {
+        toast.error('Confirme o aceite do termo de tratamento para cadastrar o paciente.');
+        return;
+      }
+
+      const { treatmentConsentAccepted, ...patientData } = data;
       const requestData = {
-        ...data,
+        ...patientData,
         tenantId: user.clinicId,
         cpf: data.cpf?.replace(/\D/g, '') || undefined,
         phone: data.phone?.replace(/\D/g, '') || undefined,
@@ -180,6 +189,9 @@ export function PatientForm({ patient, onSuccess, onCancel }: PatientFormProps) 
         bloodType: data.bloodType?.trim() || undefined,
         birthDate: data.birthDate?.trim() || undefined,
         guardianPhone: data.guardianPhone?.replace(/\D/g, '') || undefined,
+        ...(!isEditing && treatmentConsentAccepted
+          ? { treatmentConsent: { granted: true, termVersion: 'v1' } }
+          : {}),
       };
 
       let result;
@@ -553,6 +565,19 @@ export function PatientForm({ patient, onSuccess, onCancel }: PatientFormProps) 
           </div>
         </CardContent>
       </Card>
+
+      {!isEditing && (
+        <div className="flex items-start gap-3 rounded-md border p-4">
+          <Checkbox
+            id="treatmentConsentAccepted"
+            checked={watch('treatmentConsentAccepted') || false}
+            onCheckedChange={(checked) => setValue('treatmentConsentAccepted', checked === true)}
+          />
+          <Label htmlFor="treatmentConsentAccepted" className="text-sm leading-5">
+            Confirmo que o paciente ou responsável autorizou o tratamento dos dados necessários ao atendimento.
+          </Label>
+        </div>
+      )}
 
       {/* Bot\u00f5es de A\u00e7\u00e3o */}
       <div className="flex justify-end gap-4">

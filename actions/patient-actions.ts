@@ -9,6 +9,8 @@ import type {
   ActionResult, 
 } from '@/types';
 
+const PATIENT_TREATMENT_CONSENT_TERM_VERSION = 'v1';
+
 export async function createPatientAction(
   data: CreatePatientRequest
 ): Promise<ActionResult<Patient>> { 
@@ -18,6 +20,10 @@ export async function createPatientAction(
       firstName: data.fullName,
     };
     delete requestData.fullName;
+    requestData.treatmentConsent ??= {
+      granted: true,
+      termVersion: PATIENT_TREATMENT_CONSENT_TERM_VERSION,
+    };
 
     const patient = await apiRequest<any>('/patients', {
       method: 'POST',
