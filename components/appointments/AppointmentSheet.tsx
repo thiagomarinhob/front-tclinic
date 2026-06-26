@@ -244,6 +244,7 @@ export function AppointmentSheet({
           scheduledAt,
           durationMinutes: data.durationMinutes,
           observations: data.observations,
+          procedureIds: data.procedureIds,
         };
 
         await updateAppointment(editingAppointment.id, updateData);
