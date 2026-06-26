@@ -2,15 +2,20 @@
 
 import {
   setAuthToken,
-  setRefreshToken,
   removeAuthToken,
   apiRequest,
   getUserIdFromToken,
   getClinicIdFromToken,
-  getUserRoleFromToken,
+  getPermissionsFromToken,
 } from "./_helpers";
 import { API_ROUTES } from "@/config/constants";
-import type { AuthResponse, UserRole, UserTenantRole } from "@/types";
+import type {
+  PlanType,
+  TenantStatus,
+  TypeTenant,
+  UserRole,
+  UserTenantRole,
+} from "@/types";
 import { UserRole as UserRoleEnum } from "@/types";
 
 interface LoginResult {
@@ -22,6 +27,8 @@ interface LoginResult {
       fullName: string;
       role: string;
       clinicId: string;
+      permissions?: string[];
+      isPlatformAdmin?: boolean;
     };
   };
   error?: string;
@@ -73,6 +80,9 @@ export async function loginAction(
 
     // Obter userId do token JWT (está no campo 'sub')
     const userId = await getUserIdFromToken();
+    const permissions = await getPermissionsFromToken();
+    const clinicId = await getClinicIdFromToken();
+    const isPlatformAdmin = permissions.includes("admin:tenant:manage");
 
     if (!userId) {
       return {
@@ -89,8 +99,10 @@ export async function loginAction(
           id: userId,
           email: email,
           fullName: "",
-          role: "",
-          clinicId: "",
+          role: isPlatformAdmin ? UserRoleEnum.PLATFORM_ADMIN : "",
+          clinicId: clinicId ?? "",
+          permissions,
+          isPlatformAdmin,
         },
       },
     };
@@ -192,6 +204,8 @@ export async function getCurrentUserIdAction() {
 export async function getCurrentUserAction() {
   try {
     const userId = await getUserIdFromToken();
+    const clinicId = await getClinicIdFromToken();
+    const permissions = await getPermissionsFromToken();
 
     if (!userId) {
       return {
@@ -206,8 +220,10 @@ export async function getCurrentUserAction() {
       success: true,
       data: {
         userId,
-        clinicId: "", // Será preenchido ao buscar dados completos
+        clinicId: clinicId ?? "", // Será preenchido ao buscar dados completos
         role: "", // Será preenchido ao buscar dados completos
+        permissions,
+        isPlatformAdmin: permissions.includes("admin:tenant:manage"),
       },
     };
   } catch (error) {
@@ -231,15 +247,17 @@ interface UserDetailResponse {
   firstName?: string;
   lastName?: string;
   email: string;
+  isPlatformAdmin?: boolean;
+  permissions?: string[];
   createdAt?: string;
   updatedAt?: string;
   tenantRoles?: Array<{
     tenantId: string;
     tenantName?: string;
     subdomain?: string;
-    tenantType?: string;
-    tenantStatus?: string;
-    planType?: string;
+    tenantType?: TypeTenant;
+    tenantStatus?: TenantStatus;
+    planType?: PlanType;
     trialEndsAt?: string;
     tenantActive?: boolean;
     role?: string | { name?: string; value?: string };
@@ -278,9 +296,10 @@ export async function getUserByIdAction(userId: string) {
         activeTenantRole.role !== null
       ) {
         // Se vier como objeto enum serializado
+        const roleObject = activeTenantRole.role;
         roleValue =
-          (activeTenantRole.role as any).name ||
-          (activeTenantRole.role as any).value ||
+          roleObject.name ||
+          roleObject.value ||
           String(activeTenantRole.role);
       }
     }
@@ -313,7 +332,14 @@ export async function getUserByIdAction(userId: string) {
 
     // Garantir que roleValue seja um valor válido do enum UserRole do frontend
     let finalRole: UserRole = UserRoleEnum.RECEPCIONISTA; // Default
-    if (
+    const permissions = userData.permissions ?? [];
+    const isPlatformAdmin =
+      userData.isPlatformAdmin === true ||
+      permissions.includes("admin:tenant:manage");
+
+    if (isPlatformAdmin) {
+      finalRole = UserRoleEnum.PLATFORM_ADMIN;
+    } else if (
       roleValue === UserRoleEnum.ADMIN_CLINIC ||
       roleValue === "ADMIN_CLINIC"
     ) {
@@ -343,7 +369,7 @@ export async function getUserByIdAction(userId: string) {
       let v = "";
       if (typeof r === "string") v = r;
       else if (r && typeof r === "object")
-        v = (r as any).name || (r as any).value || "";
+        v = r.name || r.value || "";
       const mapped = roleMapping[v] || v;
       if (mapped === "ADMIN_CLINIC") return UserRoleEnum.ADMIN_CLINIC;
       if (mapped === "PROFISSIONAL_SAUDE")
@@ -355,9 +381,9 @@ export async function getUserByIdAction(userId: string) {
         tenantId: tr.tenantId,
         tenantName: tr.tenantName ?? "",
         subdomain: tr.subdomain,
-        tenantType: tr.tenantType as any,
-        tenantStatus: tr.tenantStatus as any,
-        planType: tr.planType as any,
+        tenantType: tr.tenantType,
+        tenantStatus: tr.tenantStatus,
+        planType: tr.planType,
         tenantActive: tr.tenantActive ?? true,
         role: mapRole(tr.role),
       }),
@@ -369,12 +395,14 @@ export async function getUserByIdAction(userId: string) {
       fullName: fullName,
       role: finalRole,
       clinicId: activeTenantRole?.tenantId || "",
+      isPlatformAdmin,
+      permissions,
       isActive: activeTenantRole?.tenantActive ?? true,
       emailVerified: true,
       createdAt: createdAtStr,
-      tenantType: activeTenantRole?.tenantType as any,
-      tenantStatus: activeTenantRole?.tenantStatus as any,
-      planType: activeTenantRole?.planType as any,
+      tenantType: activeTenantRole?.tenantType,
+      tenantStatus: activeTenantRole?.tenantStatus,
+      planType: activeTenantRole?.planType,
       trialEndsAt: activeTenantRole?.trialEndsAt,
       tenantRoles,
     };
@@ -472,7 +500,7 @@ export async function updateTenantPlanAction(
       };
     }
 
-    const response = await apiRequest<any>(
+    const response = await apiRequest<unknown>(
       API_ROUTES.TENANTS.UPDATE_PLAN(tenantId),
       {
         method: "PATCH",
@@ -553,7 +581,7 @@ export async function startTrialAction(tenantId: string) {
       };
     }
 
-    const response = await apiRequest<any>(
+    const response = await apiRequest<unknown>(
       API_ROUTES.TENANTS.START_TRIAL(tenantId),
       {
         method: "POST",

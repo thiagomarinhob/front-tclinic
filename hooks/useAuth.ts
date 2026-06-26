@@ -11,8 +11,24 @@ import {
   switchTenantAction,
 } from "@/actions/auth-actions";
 import { ROUTES } from "@/config/constants";
-import type { User, UserRole } from "@/types";
+import { UserRole, type User } from "@/types";
 import { toast } from "sonner";
+
+function buildPlatformAdminUser(userId: string, email = ""): User {
+  return {
+    id: userId,
+    email,
+    fullName: email || "Administrador",
+    role: UserRole.PLATFORM_ADMIN,
+    clinicId: "",
+    isPlatformAdmin: true,
+    permissions: ["admin:tenant:manage"],
+    isActive: true,
+    emailVerified: true,
+    createdAt: new Date().toISOString(),
+    tenantRoles: [],
+  };
+}
 
 export function useAuth() {
   const router = useRouter();
@@ -27,6 +43,18 @@ export function useAuth() {
         const result = await getCurrentUserAction();
 
         if (result.success && result.data?.userId) {
+          if (result.data.isPlatformAdmin) {
+            const adminFallback = buildPlatformAdminUser(result.data.userId);
+            setUser(adminFallback);
+            setIsAuthenticated(true);
+
+            const userResult = await getUserByIdAction(result.data.userId);
+            if (userResult.success && userResult.data) {
+              setUser(userResult.data as User);
+            }
+            return;
+          }
+
           // Buscar dados completos do usuário
           const userResult = await getUserByIdAction(result.data.userId);
 
@@ -71,12 +99,36 @@ export function useAuth() {
 
       // Buscar dados completos do usuário após login bem-sucedido
       if (result.data?.user?.id) {
+        if (result.data.user.isPlatformAdmin) {
+          const adminFallback = buildPlatformAdminUser(
+            result.data.user.id,
+            result.data.user.email,
+          );
+          setUser(adminFallback);
+          setIsAuthenticated(true);
+
+          const userResult = await getUserByIdAction(result.data.user.id);
+          if (userResult.success && userResult.data) {
+            setUser(userResult.data as User);
+          }
+
+          toast.success("Login administrativo realizado com sucesso!");
+          router.push(ROUTES.ADMIN_TENANTS);
+          return result;
+        }
+
         const userResult = await getUserByIdAction(result.data.user.id);
 
         if (userResult.success && userResult.data) {
           const userData = userResult.data as User;
           setUser(userData);
           setIsAuthenticated(true);
+
+          if (userData.isPlatformAdmin) {
+            toast.success("Login administrativo realizado com sucesso!");
+            router.push(ROUTES.ADMIN_TENANTS);
+            return result;
+          }
 
           // Validar status do tenant e redirecionar conforme os requisitos
           const tenantStatus = userData.tenantStatus;
@@ -131,6 +183,8 @@ export function useAuth() {
             fullName: result.data.user.fullName,
             role: result.data.user.role as UserRole,
             clinicId: result.data.user.clinicId,
+            isPlatformAdmin: result.data.user.isPlatformAdmin,
+            permissions: result.data.user.permissions,
             isActive: true,
             emailVerified: true,
             createdAt: new Date().toISOString(),

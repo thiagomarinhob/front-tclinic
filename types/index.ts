@@ -45,3 +45,6 @@ export * from './professional-schedule.types';
 
 // Laboratory Types
 export * from './laboratory.types';
+
+// Admin Types
+export * from './admin.types';

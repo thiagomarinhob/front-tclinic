@@ -25,6 +25,8 @@ export interface User {
   email: string;
   fullName: string;
   role: UserRole;
+  isPlatformAdmin?: boolean;
+  permissions?: string[];
   cpf?: string;
   phone?: string;
   birthDate?: string;
@@ -43,6 +45,7 @@ export interface User {
 }
 
 export enum UserRole {
+  PLATFORM_ADMIN = "PLATFORM_ADMIN",
   ADMIN_CLINIC = "ADMIN_CLINIC",
   PROFISSIONAL_SAUDE = "PROFISSIONAL_SAUDE",
   RECEPCIONISTA = "RECEPCIONISTA",

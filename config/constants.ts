@@ -33,6 +33,9 @@ export const ROUTES = {
   LABORATORY_ORDERS_NEW: "/laboratory/orders/new",
   LABORATORY_ORDER_DETAIL: (id: string) => `/laboratory/orders/${id}`,
   LABORATORY_EXAM_TYPES: "/laboratory/exam-types",
+
+  ADMIN_TENANTS: "/admin/tenants",
+  ADMIN_TENANT_DETAIL: (id: string) => `/admin/tenants/${id}`,
 } as const;
 
 export const API_ROUTES = {
@@ -62,6 +65,14 @@ export const API_ROUTES = {
   ROOMS: "/rooms",
   MEDICAL_RECORDS: "/medical-records",
   LABORATORY: "/lab",
+  ADMIN: {
+    TENANTS: "/admin/tenants",
+    TENANT_DETAIL: (tenantId: string) => `/admin/tenants/${tenantId}`,
+    SUSPEND_TENANT: (tenantId: string) => `/admin/tenants/${tenantId}/suspend`,
+    REACTIVATE_TENANT: (tenantId: string) => `/admin/tenants/${tenantId}/reactivate`,
+    EXTEND_TRIAL: (tenantId: string) => `/admin/tenants/${tenantId}/extend-trial`,
+    CHANGE_PLAN: (tenantId: string) => `/admin/tenants/${tenantId}/plan`,
+  },
 } as const;
 
 export const STORAGE_KEYS = {

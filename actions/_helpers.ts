@@ -10,6 +10,22 @@ export interface ApiError {
   status: number;
 }
 
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const padding = "=".repeat((4 - (base64.length % 4)) % 4);
+    const base64WithPadding = base64 + padding;
+
+    const jsonPayload = Buffer.from(base64WithPadding, "base64").toString(
+      "utf-8",
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Obtém o token de autenticação dos cookies
  */
@@ -25,24 +41,14 @@ export async function getUserIdFromToken(): Promise<string | null> {
   const token = await getAuthToken();
   if (!token) return null;
 
-  try {
-    // Decodifica o JWT (sem verificar assinatura, apenas para ler o payload)
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const padding = "=".repeat((4 - (base64.length % 4)) % 4);
-    const base64WithPadding = base64 + padding;
-
-    const jsonPayload = Buffer.from(base64WithPadding, "base64").toString(
-      "utf-8",
-    );
-    const decoded = JSON.parse(jsonPayload);
-
-    // No backend Java, o userId está no campo 'sub' (subject) do JWT
-    // Criado com: .withSubject(user.getId().toString())
-    return decoded.sub || decoded.userId || null;
-  } catch {
-    return null;
-  }
+  const decoded = decodeJwtPayload(token);
+  const subject = decoded?.sub;
+  const userId = decoded?.userId;
+  return typeof subject === "string"
+    ? subject
+    : typeof userId === "string"
+      ? userId
+      : null;
 }
 
 /**
@@ -52,21 +58,9 @@ export async function getClinicIdFromToken(): Promise<string | null> {
   const token = await getAuthToken();
   if (!token) return null;
 
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const padding = "=".repeat((4 - (base64.length % 4)) % 4);
-    const base64WithPadding = base64 + padding;
-
-    const jsonPayload = Buffer.from(base64WithPadding, "base64").toString(
-      "utf-8",
-    );
-    const decoded = JSON.parse(jsonPayload);
-
-    return decoded.clinicId || null;
-  } catch {
-    return null;
-  }
+  const decoded = decodeJwtPayload(token);
+  const clinicId = decoded?.clinicId;
+  return typeof clinicId === "string" ? clinicId : null;
 }
 
 /**
@@ -76,21 +70,22 @@ export async function getUserRoleFromToken(): Promise<string | null> {
   const token = await getAuthToken();
   if (!token) return null;
 
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const padding = "=".repeat((4 - (base64.length % 4)) % 4);
-    const base64WithPadding = base64 + padding;
+  const decoded = decodeJwtPayload(token);
+  const role = decoded?.role;
+  return typeof role === "string" ? role : null;
+}
 
-    const jsonPayload = Buffer.from(base64WithPadding, "base64").toString(
-      "utf-8",
-    );
-    const decoded = JSON.parse(jsonPayload);
+export async function getPermissionsFromToken(): Promise<string[]> {
+  const token = await getAuthToken();
+  if (!token) return [];
 
-    return decoded.role || null;
-  } catch {
-    return null;
-  }
+  const decoded = decodeJwtPayload(token);
+  const permissions = decoded?.permissions;
+  if (!Array.isArray(permissions)) return [];
+
+  return permissions
+    .map((permission) => String(permission))
+    .filter(Boolean);
 }
 
 /**
