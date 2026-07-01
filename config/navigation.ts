@@ -164,6 +164,7 @@ export const NAV_ROUTES: NavItem[] = [
       { name: "Prontuários", href: ROUTES.SETTINGS_PRONTUARIOS },
       { name: "Documentos", href: ROUTES.SETTINGS_DOCUMENTOS },
       { name: "Convênios", href: ROUTES.SETTINGS_CONVENIOS },
+      { name: "Lembretes", href: ROUTES.SETTINGS_LEMBRETES },
     ],
   },
 ];

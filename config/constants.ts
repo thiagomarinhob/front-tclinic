@@ -25,6 +25,7 @@ export const ROUTES = {
   SETTINGS_MEDICAL_RECORD_TEMPLATES_NEW: "/settings/medical-record-templates/new",
   SETTINGS_MEDICAL_RECORD_TEMPLATES_EDIT: (id: string) => `/settings/medical-record-templates/${id}/edit`,
   SETTINGS_CONVENIOS: "/settings/convenios",
+  SETTINGS_LEMBRETES: "/settings/lembretes",
 
   PAINEL: "/painel",
 
